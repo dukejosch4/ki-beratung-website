@@ -5,6 +5,7 @@ import { motion, useInView } from "motion/react";
 import Link from "next/link";
 import { BackgroundPaths } from "@/components/ui/background-paths";
 import { BeamsBackground } from "@/components/ui/beams-background";
+import { CostCalculator } from "@/components/ui/cost-calculator";
 import {
   Search,
   Brain,
@@ -19,6 +20,7 @@ import {
   FileText,
   Zap,
   MessageSquare,
+  Globe,
   Phone,
   ClipboardCheck,
   Wrench,
@@ -26,6 +28,7 @@ import {
   Plus,
   Menu,
   X,
+  Calculator,
 } from "lucide-react";
 
 /* ═══════════════════════════════════════════
@@ -374,6 +377,15 @@ function StickyVideoSection({
       features: ["24/7 verfügbar", "Übergabe an Mensch", "Einbettbares React-Widget"],
       highlight: false,
     },
+    {
+      icon: <Globe className="w-5 h-5" />,
+      badge: "NEU",
+      title: "Web-Development",
+      price: "ab 3.500 €",
+      desc: "Moderne Websites & Web-Apps — performant, responsive, SEO-optimiert.",
+      features: ["Next.js & React", "Referenzen: trainsense.fit, cortexboard.de", "Hosting & Wartung inklusive"],
+      highlight: false,
+    },
   ];
 
   const steps = [
@@ -392,7 +404,7 @@ function StickyVideoSection({
             Unsere Lösungen
           </p>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-white text-center mb-4">
-            Vier Produkte. Ein Ziel:
+            Fünf Lösungen. Ein Ziel:
             <br />
             Ihr Wettbewerbsvorteil.
           </h2>
@@ -411,7 +423,7 @@ function StickyVideoSection({
             {/* Products (stacked vertically on the left) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-16 sm:mb-24">
               {products.map((product, i) => (
-                <FadeUp key={i} delay={i * 0.1}>
+                <FadeUp key={i} delay={i * 0.1} className={i === products.length - 1 && products.length % 2 !== 0 ? "sm:col-span-2" : ""}>
                   <div
                     onMouseMove={handleCardGlow}
                     className={`card-glow relative rounded-2xl p-5 sm:p-6 border transition-all duration-300 h-full ${
@@ -564,6 +576,12 @@ export default function Home() {
               Vorteile
             </a>
             <a
+              href="#kostenrechner"
+              className="hover:text-white transition-colors duration-300"
+            >
+              Preise
+            </a>
+            <a
               href="#faq"
               className="hover:text-white transition-colors duration-300"
             >
@@ -603,14 +621,20 @@ export default function Home() {
         >
           <div style={{ overflow: "hidden" }}>
             <div className="px-6 py-6 flex flex-col gap-4">
-              {["Leistungen", "Technologie", "Vorteile", "FAQ"].map((item) => (
+              {[
+                { label: "Leistungen", href: "leistungen" },
+                { label: "Technologie", href: "architektur" },
+                { label: "Vorteile", href: "vorteile" },
+                { label: "Preise", href: "kostenrechner" },
+                { label: "FAQ", href: "faq" },
+              ].map((item) => (
                 <a
-                  key={item}
-                  href={`#${item.toLowerCase()}`}
+                  key={item.label}
+                  href={`#${item.href}`}
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-white/60 hover:text-white text-lg transition-colors"
                 >
-                  {item}
+                  {item.label}
                 </a>
               ))}
               <a
@@ -818,6 +842,30 @@ export default function Home() {
               </FadeUp>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ─── Kostenrechner ─── */}
+      <section id="kostenrechner" className="py-20 sm:py-32 relative">
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_30%,rgba(255,255,255,0.04),transparent)]" />
+        <div className="relative">
+          <FadeUp>
+            <div className="text-center px-6 mb-10 sm:mb-14">
+              <p className="text-xs uppercase tracking-[0.35em] text-white/40 mb-4">
+                Kostenrechner
+              </p>
+              <h2 className="text-3xl sm:text-4xl font-semibold text-white mb-3">
+                Was kostet Ihre KI-Lösung?
+              </h2>
+              <p className="text-white/40 max-w-lg mx-auto">
+                Unverbindliche Schätzung in 60 Sekunden — individueller Kostenvoranschlag im Erstgespräch.
+              </p>
+            </div>
+          </FadeUp>
+          <FadeUp delay={0.15}>
+            <CostCalculator />
+          </FadeUp>
         </div>
       </section>
 
