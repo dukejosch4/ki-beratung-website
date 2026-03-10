@@ -156,16 +156,17 @@ function StickyVideo({ containerRef }: { containerRef: React.RefObject<HTMLDivEl
     const v = video;
     const c = container;
 
-    // Force load and pause for manual scrubbing
     v.load();
     v.pause();
 
     function scrub() {
       if (!v.duration || isNaN(v.duration)) return;
       const rect = c.getBoundingClientRect();
-      const scrollRange = c.offsetHeight - window.innerHeight;
-      if (scrollRange <= 0) return;
-      const progress = Math.max(0, Math.min(1, -rect.top / scrollRange));
+      const vh = window.innerHeight;
+      // Video 0%: when container top hits viewport center
+      // Video 100%: when container bottom hits viewport center
+      const center = vh * 0.5;
+      const progress = Math.max(0, Math.min(1, (center - rect.top) / rect.height));
       const targetTime = progress * v.duration;
       if (Math.abs(v.currentTime - targetTime) > 0.05) {
         v.currentTime = targetTime;
@@ -182,7 +183,6 @@ function StickyVideo({ containerRef }: { containerRef: React.RefObject<HTMLDivEl
       onScroll();
     }
 
-    // Wait for video data, then start scrubbing
     if (v.readyState >= 2) {
       startListening();
     } else {
@@ -231,6 +231,96 @@ function StickyVideo({ containerRef }: { containerRef: React.RefObject<HTMLDivEl
         <span>Vektoren</span>
         <span>KI</span>
         <span>Chat</span>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   MOBILE SCROLL VIDEO
+   ═══════════════════════════════════════════ */
+
+function MobileScrollVideo() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const rafRef = useRef<number>(0);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    const container = containerRef.current;
+    if (!video || !container) return;
+
+    const v = video;
+    const c = container;
+
+    v.load();
+    v.pause();
+
+    function scrub() {
+      if (!v.duration || isNaN(v.duration)) return;
+      const rect = c.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const progress = Math.max(0, Math.min(1, (vh * 0.5 - rect.top) / rect.height));
+      const targetTime = progress * v.duration;
+      if (Math.abs(v.currentTime - targetTime) > 0.05) {
+        v.currentTime = targetTime;
+      }
+    }
+
+    function onScroll() {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(scrub);
+    }
+
+    function startListening() {
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+    }
+
+    if (v.readyState >= 2) {
+      startListening();
+    } else {
+      v.addEventListener("loadeddata", startListening, { once: true });
+    }
+
+    return () => {
+      v.removeEventListener("loadeddata", startListening);
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
+  return (
+    <div ref={containerRef} className="lg:hidden" style={{ minHeight: "150vh" }}>
+      <div style={{ position: "sticky", top: "4rem" }} className="px-6 pb-8">
+        <FadeUp>
+          <p className="text-xs uppercase tracking-[0.35em] text-white/40 text-center mb-3">
+            Ihr KI-System
+          </p>
+          <h3 className="text-xl font-semibold text-white text-center mb-1">
+            Schicht für Schicht
+          </h3>
+          <p className="text-sm text-white/30 text-center mb-4">
+            100% auf Ihrem Server
+          </p>
+        </FadeUp>
+        <div className="rounded-2xl border border-white/10 max-w-sm mx-auto" style={{ overflow: "clip" }}>
+          <video
+            ref={videoRef}
+            src="/hero-assembly.mp4"
+            muted
+            playsInline
+            preload="auto"
+            className="w-full block"
+          />
+        </div>
+        <div className="flex justify-between mt-3 max-w-sm mx-auto text-[10px] uppercase tracking-[0.15em] text-white/20">
+          <span>Docs</span>
+          <span>OCR</span>
+          <span>Vektoren</span>
+          <span>KI</span>
+          <span>Chat</span>
+        </div>
       </div>
     </div>
   );
@@ -296,7 +386,7 @@ function StickyVideoSection({
   return (
     <div id="leistungen">
       {/* ── Section header (full width, OUTSIDE the scroll container) ── */}
-      <div className="max-w-7xl mx-auto px-6 pt-32 pb-16">
+      <div className="max-w-7xl mx-auto px-6 pt-20 sm:pt-32 pb-10 sm:pb-16">
         <FadeUp>
           <p className="text-xs uppercase tracking-[0.35em] text-white/40 text-center mb-4">
             Unsere Lösungen
@@ -312,19 +402,19 @@ function StickyVideoSection({
       {/* ── Two-column: Content left, Video right ── */}
       <div
         ref={containerRef}
-        style={{ position: "relative", overflow: "visible", minHeight: "200vh" }}
+        style={{ position: "relative", overflow: "visible" }}
       >
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex gap-12 pb-48">
+          <div className="flex gap-12">
           {/* LEFT: Content column */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 pb-16 lg:pb-24">
             {/* Products (stacked vertically on the left) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-24">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-16 sm:mb-24">
               {products.map((product, i) => (
                 <FadeUp key={i} delay={i * 0.1}>
                   <div
                     onMouseMove={handleCardGlow}
-                    className={`card-glow relative rounded-2xl p-6 border transition-all duration-300 h-full ${
+                    className={`card-glow relative rounded-2xl p-5 sm:p-6 border transition-all duration-300 h-full ${
                       product.highlight
                         ? "bg-white/[0.04] border-white/20 shadow-[0_0_60px_rgba(255,255,255,0.06)]"
                         : "bg-white/[0.035] border-white/10 hover:border-white/20"
@@ -371,7 +461,7 @@ function StickyVideoSection({
                 </h2>
               </FadeUp>
 
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {steps.map((step, i) => (
                   <FadeUp key={i} delay={i * 0.1}>
                     <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6 hover:border-white/15 transition-all duration-300">
@@ -398,27 +488,8 @@ function StickyVideoSection({
         </div>
       </div>
 
-      {/* Mobile: Show video as autoplay block */}
-      <div className="lg:hidden px-6 pb-24">
-        <FadeUp>
-          <p className="text-xs uppercase tracking-[0.35em] text-white/40 text-center mb-3">
-            Ihr KI-System
-          </p>
-          <h3 className="text-xl font-semibold text-white text-center mb-4">
-            Schicht für Schicht aufgebaut
-          </h3>
-          <div className="rounded-2xl border border-white/10" style={{ overflow: "clip" }}>
-            <video
-              src="/hero-assembly.mp4"
-              muted
-              playsInline
-              autoPlay
-              loop
-              className="w-full block"
-            />
-          </div>
-        </FadeUp>
-      </div>
+      {/* Mobile: Scroll-driven video */}
+      <MobileScrollVideo />
     </div>
   );
 }
@@ -632,19 +703,19 @@ export default function Home() {
       </section>
 
       {/* ─── Problem / 91% ─── */}
-      <section className="py-32 relative bg-grid">
+      <section className="py-20 sm:py-32 relative bg-grid">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_50%_30%,rgba(255,255,255,0.04),transparent)]" />
         <div className="relative max-w-6xl mx-auto px-6">
           <FadeUp>
-            <p className="text-xs uppercase tracking-[0.35em] text-white/40 text-center mb-8">
+            <p className="text-xs uppercase tracking-[0.35em] text-white/40 text-center mb-6 sm:mb-8">
               Das Problem
             </p>
           </FadeUp>
 
           <FadeUp delay={0.1}>
-            <div className="text-center mb-16">
-              <span className="text-[8rem] sm:text-[10rem] lg:text-[12rem] font-bold text-white leading-none tracking-tighter">
+            <div className="text-center mb-10 sm:mb-16">
+              <span className="text-[5rem] sm:text-[10rem] lg:text-[12rem] font-bold text-white leading-none tracking-tighter">
                 <AnimatedCounter target={91} suffix="%" />
               </span>
               <p className="text-xl sm:text-2xl text-white/50 mt-2">
@@ -653,7 +724,7 @@ export default function Home() {
             </div>
           </FadeUp>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
             {[
               {
                 icon: <Search className="w-5 h-5" />,
@@ -696,7 +767,7 @@ export default function Home() {
       <StickyVideoSection handleCardGlow={handleCardGlow} />
 
       {/* ─── USP / Trust ─── */}
-      <section id="vorteile" className="py-32 relative">
+      <section id="vorteile" className="py-20 sm:py-32 relative">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_20%,rgba(255,255,255,0.06),transparent)]" />
         <div className="relative max-w-6xl mx-auto px-6">
@@ -704,12 +775,12 @@ export default function Home() {
             <p className="text-xs uppercase tracking-[0.35em] text-white/40 text-center mb-4">
               Warum wir
             </p>
-            <h2 className="text-3xl sm:text-4xl font-semibold text-white text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-semibold text-white text-center mb-10 sm:mb-16">
               Ihre Daten. Ihre Kontrolle.
             </h2>
           </FadeUp>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
               {
                 icon: <Shield className="w-5 h-5" />,
@@ -733,14 +804,14 @@ export default function Home() {
               },
             ].map((item, i) => (
               <FadeUp key={i} delay={i * 0.1} className="h-full">
-                <div className="text-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.06] h-full">
-                  <div className="w-12 h-12 rounded-full border border-white/15 bg-white/[0.05] flex items-center justify-center text-white/80 mx-auto mb-5">
+                <div className="text-center p-4 sm:p-6 rounded-2xl bg-white/[0.03] border border-white/[0.06] h-full">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/15 bg-white/[0.05] flex items-center justify-center text-white/80 mx-auto mb-3 sm:mb-5">
                     {item.icon}
                   </div>
-                  <h3 className="text-base font-semibold text-white mb-2">
+                  <h3 className="text-sm sm:text-base font-semibold text-white mb-1 sm:mb-2">
                     {item.title}
                   </h3>
-                  <p className="text-sm text-white/50 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-white/50 leading-relaxed">
                     {item.desc}
                   </p>
                 </div>
@@ -751,7 +822,7 @@ export default function Home() {
       </section>
 
       {/* ─── FAQ ─── */}
-      <section id="faq" className="py-32 relative bg-grid">
+      <section id="faq" className="py-20 sm:py-32 relative bg-grid">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_30%_at_50%_0%,rgba(255,255,255,0.04),transparent)]" />
         <div className="relative max-w-3xl mx-auto px-6">
@@ -759,7 +830,7 @@ export default function Home() {
             <p className="text-xs uppercase tracking-[0.35em] text-white/40 text-center mb-4">
               Häufige Fragen
             </p>
-            <h2 className="text-3xl sm:text-4xl font-semibold text-white text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-semibold text-white text-center mb-10 sm:mb-16">
               Ihre Bedenken — unsere Antworten
             </h2>
           </FadeUp>
@@ -794,7 +865,7 @@ export default function Home() {
       </section>
 
       {/* ─── Team ─── */}
-      <section className="py-32 relative">
+      <section className="py-20 sm:py-32 relative">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_50%_50%,rgba(255,255,255,0.03),transparent)]" />
         <div className="relative max-w-4xl mx-auto px-6">
@@ -802,12 +873,12 @@ export default function Home() {
             <p className="text-xs uppercase tracking-[0.35em] text-white/40 text-center mb-4">
               Team
             </p>
-            <h2 className="text-3xl sm:text-4xl font-semibold text-white text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-semibold text-white text-center mb-10 sm:mb-16">
               Menschen, die KI verstehen
             </h2>
           </FadeUp>
 
-          <div className="grid sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-3 gap-4 sm:gap-6">
             {[
               {
                 img: "/team-joscha.jpg",
@@ -829,7 +900,7 @@ export default function Home() {
             ].map((member, i) => (
               <FadeUp key={i} delay={i * 0.1}>
                 <div className="text-center">
-                  <div className="w-24 h-24 rounded-full border border-white/10 overflow-hidden mx-auto mb-4">
+                  <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full border border-white/10 overflow-hidden mx-auto mb-3 sm:mb-4">
                     <img
                       src={member.img}
                       alt={member.name}
@@ -837,10 +908,10 @@ export default function Home() {
                       style={{ objectPosition: member.objectPos || "center top" }}
                     />
                   </div>
-                  <h3 className="text-base font-semibold text-white">
+                  <h3 className="text-sm sm:text-base font-semibold text-white">
                     {member.name}
                   </h3>
-                  <p className="text-sm text-white/40">{member.role}</p>
+                  <p className="text-xs sm:text-sm text-white/40">{member.role}</p>
                 </div>
               </FadeUp>
             ))}
@@ -849,7 +920,7 @@ export default function Home() {
       </section>
 
       {/* ─── CTA ─── */}
-      <section id="kontakt" className="py-32 relative">
+      <section id="kontakt" className="py-20 sm:py-32 relative">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_50%,rgba(255,255,255,0.07),transparent)]" />
 
