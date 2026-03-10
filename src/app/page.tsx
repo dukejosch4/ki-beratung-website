@@ -942,7 +942,7 @@ export default function Home() {
               {
                 img: "/team-fabian.jpeg",
                 name: "Fabian Otto",
-                role: "Frontend & Automatisierung",
+                role: "Machine Learning & Automatisierung",
                 objectPos: "center 20%",
               },
             ].map((member, i) => (
