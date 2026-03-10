@@ -883,7 +883,7 @@ export default function Home() {
               {
                 img: "/team-joscha.jpg",
                 name: "Joscha Haertel",
-                role: "Wirtschaftsinformatik & Strategie",
+                role: "Strategie & KI-Infrastruktur",
               },
               {
                 img: "/team-lukas.jpeg",
