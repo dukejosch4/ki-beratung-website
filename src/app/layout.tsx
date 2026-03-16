@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "KI-Beratung Hildesheim | DSGVO-konforme KI-Lösungen für KMU",
+  title: "veqtis | DSGVO-konforme KI-Lösungen für den Mittelstand",
   description:
     "Schlüsselfertige KI-Systeme für regionale Unternehmen. Wissensassistenten, Workflow-Automatisierung und Kundenservice-Bots. 100% DSGVO-konform. Hildesheim & Hannover.",
   keywords:

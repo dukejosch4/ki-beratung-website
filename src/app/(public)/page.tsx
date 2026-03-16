@@ -549,11 +549,12 @@ export default function Home() {
         }`}
       >
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <a
-            href="#"
-            className="text-white font-semibold text-lg tracking-tight"
-          >
-            KI-BERATUNG
+          <a href="#" className="flex items-center">
+            <img
+              src="/veqtis-logo.png"
+              alt="veqtis"
+              className="h-7 invert"
+            />
           </a>
 
           <div className="hidden md:flex items-center gap-8 text-sm text-white/50">
@@ -1025,10 +1026,10 @@ export default function Home() {
             <p className="text-white/30 text-sm mt-6">
               Oder schreiben Sie uns:{" "}
               <a
-                href="mailto:kontakt@ki-beratung.de"
+                href="mailto:kontakt@veqtis.de"
                 className="text-white/50 hover:text-white underline underline-offset-4 transition-colors"
               >
-                kontakt@ki-beratung.de
+                kontakt@veqtis.de
               </a>
             </p>
           </FadeUp>
@@ -1040,9 +1041,11 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-6">
-              <span className="text-white/30 text-sm font-medium">
-                KI-BERATUNG
-              </span>
+              <img
+                src="/veqtis-logo.png"
+                alt="veqtis"
+                className="h-5 invert opacity-30"
+              />
               <span className="text-white/15 text-sm">
                 &copy; {new Date().getFullYear()}
               </span>
