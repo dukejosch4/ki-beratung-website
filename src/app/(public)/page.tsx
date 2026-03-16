@@ -553,7 +553,7 @@ export default function Home() {
             <img
               src="/veqtis-logo.png"
               alt="veqtis"
-              className="h-7 invert"
+              className="h-20 invert"
             />
           </a>
 
