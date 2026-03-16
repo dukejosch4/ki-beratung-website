@@ -9,16 +9,23 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "better-sqlite3": "^12.8.0",
+    "drizzle-orm": "^0.45.1",
+    "jose": "^6.2.1",
     "lucide-react": "^0.469.0",
     "motion": "^12.0.0",
+    "nanoid": "^5.1.6",
     "next": "^15.1.0",
+    "playwright": "^1.58.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",
+    "drizzle-kit": "^0.31.9",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.7.0"
   }

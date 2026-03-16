@@ -19,6 +19,9 @@ out/
 .DS_Store
 Thumbs.db
 
+# Lead-Finder Data
+data/
+
 # Debug
 npm-debug.log*
 
