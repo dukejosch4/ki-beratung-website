@@ -30,7 +30,7 @@ export async function checkAuth(): Promise<boolean> {
 }
 
 export function getPassword(): string {
-  return process.env.INTERN_PASSWORD || "veqtis2024";
+  return process.env.INTERN_PASSWORD || "veqtis2026";
 }
 
 export { COOKIE_NAME };
